@@ -34,6 +34,9 @@ namespace EdB.PrepareCarefully {
             LoadEquipment(preset, result, customizations);
             LoadPawns(preset, result, customizations);
             LoadTemporaryPawns(preset, result, customizations);
+            if (customizations.AllPawns.Concat(customizations.TemporaryPawns).GroupBy(p => p.Id).Any(g => g.Count() > 1)) {
+                result.AddWarning("The preset contains duplicate pawn identifiers. Ambiguous relationships were skipped; please recreate them and save the preset again.");
+            }
             LoadRelationships(preset, result, customizations);
             LoadParentChildGroups(preset, result, customizations);
 
@@ -246,7 +249,7 @@ namespace EdB.PrepareCarefully {
                             }
                         }
                         else if (temporaryPawns.ContainsKey(id)) {
-                            group.Parents.Add(temporaryPawns[id]);
+                            group.Children.Add(temporaryPawns[id]);
                         }
                         else {
                             Logger.Warning("Could not load a custom child relationship because it could not find a pawn with the saved identifer.");
@@ -381,22 +384,16 @@ namespace EdB.PrepareCarefully {
         }
         
         protected CustomizedPawn FindPawnById(string id, IEnumerable<CustomizedPawn> colonistPawns) {
-            CustomizedPawn result = colonistPawns.FirstOrDefault((CustomizedPawn c) => {
-                return id == c.Id;
-            });
-            return result;
+            // Old presets may contain duplicate IDs from importing the same character repeatedly.
+            // An ambiguous ID cannot identify a relationship endpoint safely.
+            var matches = colonistPawns.Where(c => id == c.Id).Take(2).ToList();
+            return matches.Count == 1 ? matches[0] : null;
         }
 
         public CustomizedRelationship LoadRelationship(SaveRecordRelationshipV3 saved, IEnumerable<CustomizedPawn> pawns) {
             CustomizedRelationship result = new CustomizedRelationship();
-            foreach (var p in pawns) {
-                if (p.Id == saved.source) {
-                    result.Source = p;
-                }
-                if (p.Id == saved.target) {
-                    result.Target = p;
-                }
-            }
+            result.Source = FindPawnById(saved.source, pawns);
+            result.Target = FindPawnById(saved.target, pawns);
 
             result.Def = saved?.relation != null ? DefDatabase<PawnRelationDef>.GetNamedSilentFail(saved.relation) : null;
             if (result.Def != null) {

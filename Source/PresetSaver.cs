@@ -16,22 +16,19 @@ namespace EdB.PrepareCarefully {
         public void SaveToFile(ModState state, string presetName) {
             bool problem = false;
             try {
-                // Verify that all pawns have non-null identifiers.
-                foreach (CustomizedPawn customizedPawn in state.Customizations.AllPawns) {
-                    if (customizedPawn.Id == null) {
-                        customizedPawn.Id = GenerateId();
-                    }
-                }
-                foreach (var g in state.Customizations.ParentChildGroups) {
-                    foreach (var parent in g.Parents) {
-                        if (parent != null && parent.Id == null) {
-                            parent.Id = GenerateId();
-                        }
-                        foreach (var child in g.Children) {
-                            if (child != null && child.Id == null) {
-                                child.Id = GenerateId();
-                            }
-                        }
+                // Different pawns must have different identifiers, including imported characters.
+                var referencedPawns = state.Customizations.AllPawns
+                    .Concat(state.Customizations.TemporaryPawns)
+                    .Concat(state.Customizations.ParentChildGroups.SelectMany(g => g.Parents.Concat(g.Children)))
+                    .Concat(state.Customizations.Relationships.SelectMany(r => new[] { r.Source, r.Target }))
+                    .Where(p => p != null)
+                    .Distinct();
+                HashSet<string> pawnIds = new HashSet<string>();
+                foreach (var pawn in referencedPawns) {
+                    if (string.IsNullOrEmpty(pawn.Id) || !pawnIds.Add(pawn.Id)) {
+                        do {
+                            pawn.Id = GenerateId();
+                        } while (!pawnIds.Add(pawn.Id));
                     }
                 }
 
@@ -40,7 +37,7 @@ namespace EdB.PrepareCarefully {
                 foreach (var pawn in state.Customizations.TemporaryPawns) {
                     preset.temporaryPawns.Add(new SaveRecordTemporaryPawnV5() {
                         id = pawn.Id,
-                        gender = pawn.Pawn?.gender.ToString()
+                        gender = (pawn.TemporaryPawn?.Gender ?? pawn.Pawn?.gender)?.ToString()
                     });
                 }
                 foreach (CustomizedPawn customizedPawn in state.Customizations.AllPawns) {
@@ -56,7 +53,7 @@ namespace EdB.PrepareCarefully {
                             if (!idSet.Contains(parent.Id)) {
                                 preset.temporaryPawns.Add(new SaveRecordTemporaryPawnV5() {
                                     id = parent.Id,
-                                    gender = parent.Pawn?.gender.ToString()
+                                    gender = (parent.TemporaryPawn?.Gender ?? parent.Pawn?.gender)?.ToString()
                                 });
                                 idSet.Add(parent.Id);
                             }
@@ -67,7 +64,7 @@ namespace EdB.PrepareCarefully {
                             if (!idSet.Contains(child.Id)) {
                                 preset.temporaryPawns.Add(new SaveRecordTemporaryPawnV5() {
                                     id = child.Id,
-                                    gender = child.Pawn?.gender.ToString()
+                                    gender = (child.TemporaryPawn?.Gender ?? child.Pawn?.gender)?.ToString()
                                 });
                                 idSet.Add(child.Id);
                             }
@@ -98,7 +95,7 @@ namespace EdB.PrepareCarefully {
                     group.parents = new List<string>();
                     group.children = new List<string>();
                     foreach (var p in g.Parents) {
-                        if (p.Pawn == null) {
+                        if (p == null || (p.Pawn == null && p.TemporaryPawn == null)) {
                             problem = true;
                             Logger.Warning("Found an invalid parent/child relationship when saving the preset: " + presetName);
                             continue;
@@ -108,7 +105,7 @@ namespace EdB.PrepareCarefully {
                         }
                     }
                     foreach (var p in g.Children) {
-                        if (p.Pawn == null) {
+                        if (p == null || (p.Pawn == null && p.TemporaryPawn == null)) {
                             problem = true;
                             Logger.Warning("Found an invalid parent/child relationship when saving the preset: " + presetName);
                             continue;

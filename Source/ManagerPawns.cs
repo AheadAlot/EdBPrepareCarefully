@@ -290,6 +290,8 @@ namespace EdB.PrepareCarefully {
                 Logger.Warning("Failed to load pawn");
                 return pawnLoaderResult;
             }
+            // Importing a character creates a new pawn, not another reference to the saved pawn.
+            customizedPawn.Id = GeneratePawnId();
             customizedPawn.Type = pawnType;
             customizedPawn.Pawn = Customizer.CreatePawnFromCustomizations(customizedPawn.Customizations);
             pawnLoaderResult.Pawn = AddPawnToPawnList(customizedPawn);
