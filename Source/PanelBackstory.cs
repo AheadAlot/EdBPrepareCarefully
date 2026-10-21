@@ -271,7 +271,7 @@ namespace EdB.PrepareCarefully {
             dialog.DrawHeader = (Rect rect) => {
                 GUI.color = Color.white;
                 Text.Font = GameFont.Small;
-                Rect searchRect = new Rect(rect.x, rect.y, Mathf.Min(210f, rect.width - 32), 24);
+                Rect searchRect = new Rect(rect.xMax - 220, rect.y + 15, 210, 24);
                 searchWidget.OnGUI(searchRect,
                     () => {
                         filterSearchTerm = searchWidget.filter.Text;
@@ -308,11 +308,11 @@ namespace EdB.PrepareCarefully {
                 float filterHeight = 18;
                 float filterPadding = 4;
                 float maxWidth = rect.width - 32;
-                Vector2 cursor = new Vector2(0, 32);
+                Vector2 cursor = new Vector2(0, searchRect.yMax - rect.y + filterPadding);
 
                 string addFilterLabel = "EdB.PC.Dialog.Backstory.Filter.Add".Translate();
                 float width = Text.CalcSize(addFilterLabel).x;
-                Rect addFilterRect = new Rect(rect.x, rect.y + cursor.y, width + 30, filterHeight);
+                Rect addFilterRect = new Rect(rect.x, searchRect.y + (searchRect.height - filterHeight) / 2, width + 30, filterHeight);
                 Widgets.DrawAtlas(addFilterRect, Textures.TextureFilterAtlas1);
                 Text.Font = GameFont.Tiny;
                 if (addFilterRect.Contains(Event.current.mousePosition)) {
@@ -342,12 +342,11 @@ namespace EdB.PrepareCarefully {
                     Find.WindowStack.Add(new FloatMenu(list, null, false));
                 }
 
-                cursor.x += addFilterRect.width + filterPadding;
                 Text.Font = GameFont.Tiny;
                 foreach (var filter in activeFilters) {
                     GUI.color = Style.ColorText;
                     float labelWidth = Text.CalcSize(filter.LabelShort).x;
-                    if (cursor.x + labelWidth > maxWidth) {
+                    if (cursor.x + labelWidth + 30 > maxWidth) {
                         cursor.x = 0;
                         cursor.y += filterHeight + filterPadding;
                     }
@@ -373,7 +372,7 @@ namespace EdB.PrepareCarefully {
                 Text.Font = GameFont.Small;
                 GUI.color = Color.white;
 
-                return cursor.y + filterHeight + 4;
+                return activeFilters.Count == 0 ? cursor.y : cursor.y + filterHeight + filterPadding;
             };
             Find.WindowStack.Add(dialog);
         }
