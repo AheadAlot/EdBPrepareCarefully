@@ -112,9 +112,9 @@ namespace EdB.PrepareCarefully {
 
         protected SimpleCurve DefaultAgeGenerationCurve {
             get {
-                FieldInfo field = ReflectionUtil.GetNonPublicStaticField(typeof(Verse.PawnGenerator), "DefaultAgeGenerationCurve");
-                if (field != null) {
-                    return field.GetValue(null) as SimpleCurve;
+                FieldInfo curveField = ReflectionUtil.GetNonPublicStaticField(typeof(Verse.PawnGenerator), "DefaultAgeGenerationCurve");
+                if (curveField != null) {
+                    return curveField.GetValue(null) as SimpleCurve;
                 }
                 else {
                     return null;

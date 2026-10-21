@@ -1,313 +1,72 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{86C9833E-894B-4633-ACFA-EFE4157BBBE6}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <TargetFrameworks>net472;net10.0</TargetFrameworks>
+    <LangVersion>13.0</LangVersion>
     <RootNamespace>EdB.PrepareCarefully</RootNamespace>
     <AssemblyName>EdBPrepareCarefully</AssemblyName>
-    <ReleaseVersion>0.17.1.7</ReleaseVersion>
-    <UseMSBuildEngine>False</UseMSBuildEngine>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <RimWorldDir Condition="'$(RimWorldDir)' == ''">$(RIMWORLD_DIR)</RimWorldDir>
+    <HarmonyPath Condition="'$(HarmonyPath)' == ''">Libraries\Harmony\1.7\0Harmony.dll</HarmonyPath>
+    <Harmony16Path Condition="'$(Harmony16Path)' == ''">Libraries\Harmony\1.6\0Harmony.dll</Harmony16Path>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="0Harmony">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Harmony\2.3.3\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>Libraries\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>Libraries\UnityEngine.IMGUIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>Libraries\UnityEngine.InputLegacyModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>Libraries\UnityEngine.TextRenderingModule.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\AgeModifier.cs" />
-    <Compile Include="Source\AlienRace.cs" />
-    <Compile Include="Source\AlienRaceBodyAddon.cs" />
-    <Compile Include="Source\ImplantOption.cs" />
-    <Compile Include="Source\PawnLoaderV3.cs" />
-    <Compile Include="Source\ExtensionsPawnRelationDef.cs" />
-    <Compile Include="Source\PawnSaver.cs" />
-    <Compile Include="Source\CostCalculator.cs" />
-    <Compile Include="Source\Customizations.cs" />
-    <Compile Include="Source\DialogIdeos.cs" />
-    <Compile Include="Source\FilterBackstoryMatchesFaction.cs" />
-    <Compile Include="Source\DialogAbilities.cs" />
-    <Compile Include="Source\DialogApparel.cs" />
-    <Compile Include="Source\DialogManageTraits.cs" />
-    <Compile Include="Source\EquipmentOption.cs" />
-    <Compile Include="Source\EquipmentSpawnType.cs" />
-    <Compile Include="Source\PanelAbilitiesRefactored.cs" />
-    <Compile Include="Source\PanelIdeo.cs" />
-    <Compile Include="Source\PanelTitles.cs" />
-    <Compile Include="Source\PanelXenotype.cs" />
-    <Compile Include="Source\PawnLoader.cs" />
-    <Compile Include="Source\ControllerTabViewEquipment.cs" />
-    <Compile Include="Source\CustomizedRelationship.cs" />
-    <Compile Include="Source\DialogManageImplants.cs" />
-    <Compile Include="Source\DialogSelectParentChildPawn.cs" />
-    <Compile Include="Source\CustomizedEquipment.cs" />
-    <Compile Include="Source\ManagerEquipment.cs" />
-    <Compile Include="Source\PanelEquipmentAvailable.cs" />
-    <Compile Include="Source\PanelEquipmentSelected.cs" />
-    <Compile Include="Source\PanelPossessions.cs" />
-    <Compile Include="Source\PanelApparel.cs" />
-    <Compile Include="Source\PanelHealth.cs" />
-    <Compile Include="Source\PanelRelationshipsOther.cs" />
-    <Compile Include="Source\PanelRelationshipsParentChild.cs" />
-    <Compile Include="Source\ParentChildGroup.cs" />
-    <Compile Include="Source\PawnGenerationRequestBuilder.cs" />
-    <Compile Include="Source\PanelAgeRefactored.cs" />
-    <Compile Include="Source\PanelAppearance.cs" />
-    <Compile Include="Source\PanelBackstory.cs" />
-    <Compile Include="Source\CustomizedPawn.cs" />
-    <Compile Include="Source\PawnCustomizer.cs" />
-    <Compile Include="Source\ITabView.cs" />
-    <Compile Include="Source\ModState.cs" />
-    <Compile Include="Source\PagePrepareCarefully.cs" />
-    <Compile Include="Source\Mod.cs" />
-    <Compile Include="Source\CustomizationsPawn.cs" />
-    <Compile Include="Source\ColonistFiles.cs" />
-    <Compile Include="Source\ColorSelectorType.cs" />
-    <Compile Include="Source\CustomFaction.cs" />
-    <Compile Include="Source\DialogFavoriteColor.cs" />
-    <Compile Include="Source\DialogTitles.cs" />
-    <Compile Include="Source\ExtensionsBackstory.cs" />
-    <Compile Include="Source\ExtensionsDictionary.cs" />
-    <Compile Include="Source\ExtensionsEnumerable.cs" />
-    <Compile Include="Source\InitializationException.cs" />
-    <Compile Include="Source\InjurySeverity.cs" />
-    <Compile Include="Source\PanelColonyPawnListMinimized.cs" />
-    <Compile Include="Source\PanelIncapableOf.cs" />
-    <Compile Include="Source\PanelPawnListMinimized.cs" />
-    <Compile Include="Source\PanelSaveCharacter.cs" />
-    <Compile Include="Source\PanelModule.cs" />
-    <Compile Include="Source\CustomizedPawnType.cs" />
-    <Compile Include="Source\DialogInitializationError.cs" />
-    <Compile Include="Source\DialogPawnKinds.cs" />
-    <Compile Include="Source\DialogColonist.cs" />
-    <Compile Include="Source\DialogLoadColonist.cs" />
-    <Compile Include="Source\DialogLoadPreset.cs" />
-    <Compile Include="Source\DialogPreset.cs" />
-    <Compile Include="Source\DialogSaveColonist.cs" />
-    <Compile Include="Source\DialogSavePreset.cs" />
-    <Compile Include="Source\DragSlider.cs" />
-    <Compile Include="Source\EquipmentDatabase.cs" />
-    <Compile Include="Source\EquipmentRecord.cs" />
-    <Compile Include="Source\ExtensionsColorGenerator.cs" />
-    <Compile Include="Source\ExtensionsHediffDef.cs" />
-    <Compile Include="Source\ExtensionsPawn.cs" />
-    <Compile Include="Source\ExtensionsThing.cs" />
-    <Compile Include="Source\Filter.cs" />
-    <Compile Include="Source\FilterBackstoryNoDisabledWorkTypes.cs" />
-    <Compile Include="Source\FilterBackstoryNoPenalties.cs" />
-    <Compile Include="Source\FilterBackstorySkillAdjustment.cs" />
-    <Compile Include="Source\LabelTrimmer.cs" />
-    <Compile Include="Source\OptionsApparel.cs" />
-    <Compile Include="Source\OptionsHealth.cs" />
-    <Compile Include="Source\HarmonyPatches.cs" />
-    <Compile Include="Source\PawnGenerationRequestWrapper.cs" />
-    <Compile Include="Source\ProviderPassions.cs" />
-    <Compile Include="Source\ProviderPawnKinds.cs" />
-    <Compile Include="Source\PawnLayer.cs" />
-    <Compile Include="Source\PawnLayerAlienAddon.cs" />
-    <Compile Include="Source\PawnLayerBodyTattoo.cs" />
-    <Compile Include="Source\PawnLayerFaceTattoo.cs" />
-    <Compile Include="Source\PawnLayerBody.cs" />
-    <Compile Include="Source\PawnLayerHair.cs" />
-    <Compile Include="Source\PawnLayerBeard.cs" />
-    <Compile Include="Source\PawnLayerHead.cs" />
-    <Compile Include="Source\PawnLayerOption.cs" />
-    <Compile Include="Source\PawnLayerOptionAlienAddon.cs" />
-    <Compile Include="Source\PawnLayerOptionTattoo.cs" />
-    <Compile Include="Source\PawnLayerOptionBody.cs" />
-    <Compile Include="Source\PawnLayerOptionHair.cs" />
-    <Compile Include="Source\PawnLayerOptionBeard.cs" />
-    <Compile Include="Source\PawnLayerOptionHead.cs" />
-    <Compile Include="Source\PawnListMode.cs" />
-    <Compile Include="Source\PresetFiles.cs" />
-    <Compile Include="Source\ProviderAgeLimits.cs" />
-    <Compile Include="Source\ProviderAlienRaces.cs" />
-    <Compile Include="Source\ProviderBodyTatoos.cs" />
-    <Compile Include="Source\ProviderFaceTatoos.cs" />
-    <Compile Include="Source\ProviderBeards.cs" />
-    <Compile Include="Source\ProviderHealthOptions.cs" />
-    <Compile Include="Source\ProviderBodyTypes.cs" />
-    <Compile Include="Source\ProviderHair.cs" />
-    <Compile Include="Source\ProviderHeadTypes.cs" />
-    <Compile Include="Source\OptionsBodyType.cs" />
-    <Compile Include="Source\OptionsHair.cs" />
-    <Compile Include="Source\OptionsHeadType.cs" />
-    <Compile Include="Source\ProviderTitles.cs" />
-    <Compile Include="Source\ControllerPage.cs" />
-    <Compile Include="Source\PanelColonyPawnListRefactored.cs" />
-    <Compile Include="Source\PanelName.cs" />
-    <Compile Include="Source\PanelPawnList.cs" />
-    <Compile Include="Source\PanelRandomize.cs" />
-    <Compile Include="Source\PanelScrollingContent.cs" />
-    <Compile Include="Source\PanelSkills.cs" />
-    <Compile Include="Source\PanelTraits.cs" />
-    <Compile Include="Source\PanelWorldPawnListMinimized.cs" />
-    <Compile Include="Source\PanelWorldPawnList.cs" />
-    <Compile Include="Source\PawnLoaderResult.cs" />
-    <Compile Include="Source\PawnLoaderV5.cs" />
-    <Compile Include="Source\PawnRandomizerOptions.cs" />
-    <Compile Include="Source\MapperPawnToCustomizations.cs" />
-    <Compile Include="Source\PresetLoader.cs" />
-    <Compile Include="Source\PresetLoaderReport.cs" />
-    <Compile Include="Source\PresetLoaderReportRecord.cs" />
-    <Compile Include="Source\PresetLoaderResult.cs" />
-    <Compile Include="Source\PresetLoaderV5.cs" />
-    <Compile Include="Source\PresetLoaderV3.cs" />
-    <Compile Include="Source\PresetSaver.cs" />
-    <Compile Include="Source\ProviderPawnLayers.cs" />
-    <Compile Include="Source\TemporaryPawn.cs" />
-    <Compile Include="Source\UtilityAge.cs" />
-    <Compile Include="Source\UtilityApparel.cs" />
-    <Compile Include="Source\UtilityColor.cs" />
-    <Compile Include="Source\UtilityEnumerable.cs" />
-    <Compile Include="Source\UtilityEquipmentSpawnType.cs" />
-    <Compile Include="Source\UtilityIdeo.cs" />
-    <Compile Include="Source\UtilityPawns.cs" />
-    <Compile Include="Source\RelationshipBuilder.cs" />
-    <Compile Include="Source\RelationshipList.cs" />
-    <Compile Include="Source\ManagerRelationships.cs" />
-    <Compile Include="Source\ManagerPawns.cs" />
-    <Compile Include="Source\ControllerTabViewPawns.cs" />
-    <Compile Include="Source\ControllerTabViewRelationships.cs" />
-    <Compile Include="Source\TabViewEquipment.cs" />
-    <Compile Include="Source\TabViewPawns.cs" />
-    <Compile Include="Source\TabViewRelationships.cs" />
-    <Compile Include="Source\UtilityGUIState.cs" />
-    <Compile Include="Source\UtilityQuality.cs" />
-    <Compile Include="Source\UtilitySaveLoad.cs" />
-    <Compile Include="Source\UtilityTraits.cs" />
-    <Compile Include="Source\Version5\SaveRecordGeneV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordMutantV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordValueGroupV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordValueV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordTemporaryPawnV5.cs" />
-    <Compile Include="Source\ViewState.cs" />
-    <Compile Include="Source\WidgetColorSelector.cs" />
-    <Compile Include="Source\WidgetEquipmentField.cs" />
-    <Compile Include="Source\WidgetEquipmentLoadingProgressBar.cs" />
-    <Compile Include="Source\WidgetInfoButton.cs" />
-    <Compile Include="Source\WidgetPortrait.cs" />
-    <Compile Include="Source\Reflection.cs" />
-    <Compile Include="Source\ReflectionCache.cs" />
-    <Compile Include="Source\QuietReflectionUtil.cs" />
-    <Compile Include="Source\ReflectionUtil.cs" />
-    <Compile Include="Source\RelationshipDefinitionHelper.cs" />
-    <Compile Include="Source\ScenPart_CustomAnimal.cs" />
-    <Compile Include="Source\WidgetScrollViewHorizontal.cs" />
-    <Compile Include="Source\EquipmentSelection.cs" />
-    <Compile Include="Source\ExtensionsTabRecord.cs" />
-    <Compile Include="Source\Version3\SaveRecordEquipmentV3.cs" />
-    <Compile Include="Source\IEquipment.cs" />
-    <Compile Include="Source\EquipmentKey.cs" />
-    <Compile Include="Source\WidgetScrollViewVertical.cs" />
-    <Compile Include="Source\DialogOptions.cs" />
-    <Compile Include="Source\Textures.cs" />
-    <Compile Include="Source\Logger.cs" />
-    <Compile Include="Source\Implant.cs" />
-    <Compile Include="Source\CustomizedHediff.cs" />
-    <Compile Include="Source\CarefullyPawnRelationDef.cs" />
-    <Compile Include="Source\ExtensionsObject.cs" />
-    <Compile Include="Source\Version4\SaveRecordAlienV4.cs" />
-    <Compile Include="Source\Version4\SaveRecordFactionV4.cs" />
-    <Compile Include="Source\Version3\SaveRecordParentChildGroupV3.cs" />
-    <Compile Include="Source\Version3\SaveRecordPawnV3.cs" />
-    <Compile Include="Source\Version3\SaveRecordRelationshipV3.cs" />
-    <Compile Include="Source\Version3\SaveRecordImplantV3.cs" />
-    <Compile Include="Source\Version3\SaveRecordInjuryV3.cs" />
-    <Compile Include="Source\Version4\SaveRecordApparelV4.cs" />
-    <Compile Include="Source\Version4\SaveRecordPawnV4.cs" />
-    <Compile Include="Source\Version4\SaveRecordPresetV4.cs" />
-    <Compile Include="Source\Version4\SaveRecordSkillV4.cs" />
-    <Compile Include="Source\Version5\SaveRecordApparelV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordGenesV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordHediffV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordIdeoV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordImplantV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordInjuryV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordPawnV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordPossessionV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordPresetV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordTitleV5.cs" />
-    <Compile Include="Source\Version5\SaveRecordTraitV5.cs" />
-    <Compile Include="Source\Injury.cs" />
-    <Compile Include="Source\InjuryOption.cs" />
-    <Compile Include="Source\DialogConfirm.cs" />
-    <Compile Include="Source\TabViewBase.cs" />
-    <Compile Include="Source\IPanel.cs" />
-    <Compile Include="Source\PanelBase.cs" />
-    <Compile Include="Source\Style.cs" />
-    <Compile Include="Source\ProviderBackstories.cs" />
-    <Compile Include="Source\ProviderTraits.cs" />
-    <Compile Include="Source\ExtensionsRect.cs" />
-    <Compile Include="Source\WidgetField.cs" />
-    <Compile Include="Source\ProviderEquipment.cs" />
-    <Compile Include="Source\EquipmentType.cs" />
-    <Compile Include="Source\WidgetEquipmentIcon.cs" />
-    <Compile Include="Source\WidgetNumberField.cs" />
-    <Compile Include="Source\WidgetTable.cs" />
-    <Compile Include="Source\ExtensionsVector.cs" />
-    <Compile Include="Source\WidgetDropdown.cs" />
-    <Compile Include="Source\ProviderFactions.cs" />
+    <Compile Include="Source\**\*.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Content Include="Resources\About\Manifest.xml" />
-    <Content Include="Resources\LoadFolders.xml" />
-    <Content Include="Resources\Common\Languages\English\Keyed\EdBPrepareCarefully.xml" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4871" PrivateAssets="all" Condition="'$(RimWorld16ManagedDir)' == ''" />
+    <Reference Include="Assembly-CSharp" Condition="'$(RimWorld16ManagedDir)' != ''">
+      <HintPath>$(RimWorld16ManagedDir)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule;UnityEngine.IMGUIModule;UnityEngine.InputLegacyModule;UnityEngine.TextRenderingModule" Condition="'$(RimWorld16ManagedDir)' != ''">
+      <HintPath>$(RimWorld16ManagedDir)\%(Identity).dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(Harmony16Path)</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include=".editorconfig" />
-    <None Include="Resources\CHANGELOG.txt" />
-    <None Include="Resources\About\About.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="LICENSE" />
-    <None Include="README.md" />
-    <None Include="Libraries\README.md" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(RimWorldDir)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityStubs">
+      <HintPath>$(RimWorldDir)\UnityStubs.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(HarmonyPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <Target Name="CheckGameReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(TargetFramework)' == 'net10.0' and !Exists('$(RimWorldDir)\Assembly-CSharp.dll')" Text="Set RimWorldDir (or RIMWORLD_DIR) to your RimWorld 1.7 installation directory." />
+    <Error Condition="'$(TargetFramework)' == 'net10.0' and !Exists('$(RimWorldDir)\UnityStubs.dll')" Text="RimWorld 1.7 UnityStubs.dll was not found in RimWorldDir." />
+    <Error Condition="'$(TargetFramework)' == 'net10.0' and !Exists('$(HarmonyPath)')" Text="Set HarmonyPath to the Harmony 1.7 mod's 0Harmony.dll." />
+    <Error Condition="'$(TargetFramework)' == 'net472' and !Exists('$(Harmony16Path)')" Text="Set Harmony16Path to the Harmony 1.6 mod's 0Harmony.dll." />
+    <Error Condition="'$(TargetFramework)' == 'net472' and '$(RimWorld16ManagedDir)' != '' and !Exists('$(RimWorld16ManagedDir)\Assembly-CSharp.dll')" Text="RimWorld16ManagedDir must point to RimWorld 1.6's RimWorldWin64_Data/Managed directory." />
+  </Target>
+  <Target Name="Dist" DependsOnTargets="Build">
+    <Error Condition="'$(Configuration)' != 'Release'" Text="Distribution requires Configuration=Release." />
+    <Error Condition="'$(TargetFramework)' != ''" Text="Distribution requires both frameworks. Do not set TargetFramework for Dist." />
+    <PropertyGroup>
+      <DistDir>$(MSBuildProjectDirectory)\dist\EdBPrepareCarefully</DistDir>
+      <Assembly16>$(MSBuildProjectDirectory)\bin\Release\net472\EdBPrepareCarefully.dll</Assembly16>
+      <Assembly17>$(MSBuildProjectDirectory)\bin\Release\net10.0\EdBPrepareCarefully.dll</Assembly17>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(Assembly16)') or !Exists('$(Assembly17)')" Text="Both RimWorld 1.6 and 1.7 Release assemblies are required for distribution." />
+    <ItemGroup>
+      <DistResource Include="Resources\**\*" />
+    </ItemGroup>
+    <RemoveDir Directories="$(DistDir)" />
+    <Copy SourceFiles="@(DistResource)" DestinationFiles="@(DistResource->'$(DistDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="LICENSE;THIRD-PARTY-LICENSES" DestinationFolder="$(DistDir)" />
+    <Copy SourceFiles="$(Assembly16)" DestinationFolder="$(DistDir)\1.6\Assemblies" />
+    <Copy SourceFiles="$(Assembly17)" DestinationFolder="$(DistDir)\1.7\Assemblies" />
+    <Message Importance="high" Text="Distribution created (RimWorld 1.6 + 1.7): $(DistDir)" />
+  </Target>
 </Project>
