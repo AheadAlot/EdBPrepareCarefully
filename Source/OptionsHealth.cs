@@ -114,7 +114,7 @@ namespace EdB.PrepareCarefully {
             return null;
         }
         public UniqueBodyPart FindBodyPartsForRecord(BodyPartRecord record) {
-            if (bodyPartRecordLookup.TryGetValue(record, out UniqueBodyPart result)) {
+            if (record != null && bodyPartRecordLookup.TryGetValue(record, out UniqueBodyPart result)) {
                 return result;
             }
             else {
@@ -122,7 +122,7 @@ namespace EdB.PrepareCarefully {
             }
         }
         public IEnumerable<UniqueBodyPart> FindBodyPartsForDef(BodyPartDef def) {
-            if (bodyPartDefLookup.TryGetValue(def, out List<UniqueBodyPart> result)) {
+            if (def != null && bodyPartDefLookup.TryGetValue(def, out List<UniqueBodyPart> result)) {
                 return result;
             }
             else {
@@ -144,15 +144,7 @@ namespace EdB.PrepareCarefully {
                 if (o.HediffDef != hediff.def) {
                     return false;
                 }
-                if (hediff.Part != null) {
-                    if (o.BodyPartDefs.NullOrEmpty()) {
-                        return false;
-                    }
-                    if (!o.BodyPartDefs.Contains(hediff.Part.def)) {
-                        return false;
-                    }
-                }
-                return true;
+                return ImplantOptionTargetsBodyPart(o, hediff.Part?.def);
             });
         }
 
@@ -161,11 +153,21 @@ namespace EdB.PrepareCarefully {
                 if (o.HediffDef != hediffDef) {
                     return false;
                 }
-                if (bodyPartDef == null && o.BodyPartDefs == null) {
-                    return true;
-                }
-                return o.BodyPartDefs.Contains(bodyPartDef);
+                return ImplantOptionTargetsBodyPart(o, bodyPartDef);
             }).FirstOrDefault();
+        }
+
+        public bool ImplantOptionTargetsBodyPart(ImplantOption option, BodyPartDef bodyPartDef) {
+            if (option.RecipeDef != null) {
+                return RecipeTargetsBodyPart(option.RecipeDef, bodyPartDef);
+            }
+            if (option.BodyPartRecord != null) {
+                return bodyPartDef != null && option.BodyPartRecord.def == bodyPartDef;
+            }
+            if (bodyPartDef == null) {
+                return option.BodyPartDefs.NullOrEmpty() || option.BodyPartDefs.Contains(null);
+            }
+            return option.BodyPartDefs != null && option.BodyPartDefs.Contains(bodyPartDef);
         }
 
         public ImplantOption FindImplantOptionThatAddsRecipeDefToBodyPart(RecipeDef recipefDef, BodyPartDef bodyPartDef) {
@@ -173,7 +175,7 @@ namespace EdB.PrepareCarefully {
                 return null;
             }
             return ImplantOptions.Where(o => {
-                return RecipeTargetsBodyPart(recipefDef, bodyPartDef);
+                return o.RecipeDef == recipefDef && RecipeTargetsBodyPart(recipefDef, bodyPartDef);
             }).FirstOrDefault();
         }
 
@@ -187,27 +189,16 @@ namespace EdB.PrepareCarefully {
             if (recipe.addsHediff != hediff.def) {
                 return false;
             }
-            if (hediff.Part != null) {
-                if (recipe.appliedOnFixedBodyParts.Contains(hediff.Part.def)) {
-                    return true;
-                }
-                foreach (var group in recipe.appliedOnFixedBodyPartGroups) {
-                    var parts = this.PartsForBodyPartGroup(group.defName);
-                    if (parts != null) {
-                        if (parts.ConvertAll(p => p.Record.def).Contains(hediff.Part.def)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            else if (recipe.appliedOnFixedBodyParts.Count == 0 && recipe.appliedOnFixedBodyPartGroups.Count == 0) {
-                return true;
-            }
-            return false;
+            return RecipeTargetsBodyPart(recipe, hediff.Part?.def);
         }
         public bool RecipeTargetsBodyPart(RecipeDef recipeDef, BodyPartDef bodyPartDef) {
-            if (bodyPartDef == null && !recipeDef.targetsBodyPart) {
-                return true;
+            if (recipeDef == null) {
+                return false;
+            }
+            if (bodyPartDef == null) {
+                return !recipeDef.targetsBodyPart
+                    && recipeDef.appliedOnFixedBodyParts.NullOrEmpty()
+                    && recipeDef.appliedOnFixedBodyPartGroups.NullOrEmpty();
             }
             if (recipeDef.appliedOnFixedBodyParts != null) {
                 if (recipeDef.appliedOnFixedBodyParts.Contains(bodyPartDef)) {

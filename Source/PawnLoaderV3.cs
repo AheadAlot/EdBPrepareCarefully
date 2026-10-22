@@ -334,16 +334,19 @@ namespace EdB.PrepareCarefully {
             OptionsHealth healthOptions = ProviderHealthOptions.GetOptions(customizations.PawnKind.race);
             for (int i = 0; i < record.implants.Count; i++) {
                 SaveRecordImplantV3 implantRecord = record.implants[i];
-                UniqueBodyPart uniqueBodyPart = healthOptions.FindBodyPartByName(implantRecord.bodyPart, implantRecord.bodyPartIndex != null ? implantRecord.bodyPartIndex.Value : 0);
-                if (uniqueBodyPart == null) {
-                    uniqueBodyPart = FindReplacementBodyPart(healthOptions, implantRecord.bodyPart);
+                BodyPartRecord bodyPart = null;
+                if (implantRecord.bodyPart != null) {
+                    UniqueBodyPart uniqueBodyPart = healthOptions.FindBodyPartByName(implantRecord.bodyPart, implantRecord.bodyPartIndex ?? 0);
+                    if (uniqueBodyPart == null) {
+                        uniqueBodyPart = FindReplacementBodyPart(healthOptions, implantRecord.bodyPart);
+                    }
+                    if (uniqueBodyPart == null) {
+                        result.AddWarning("Could not add the implant because it could not find the needed body part \"" + implantRecord.bodyPart + "\""
+                            + (implantRecord.bodyPartIndex != null ? " with index " + implantRecord.bodyPartIndex : ""));
+                        continue;
+                    }
+                    bodyPart = uniqueBodyPart.Record;
                 }
-                if (uniqueBodyPart == null) {
-                    result.AddWarning("Could not add the implant because it could not find the needed body part \"" + implantRecord.bodyPart + "\""
-                        + (implantRecord.bodyPartIndex != null ? " with index " + implantRecord.bodyPartIndex : ""));
-                    continue;
-                }
-                BodyPartRecord bodyPart = uniqueBodyPart.Record;
                 if (implantRecord.recipe != null) {
                     RecipeDef recipeDef = FindRecipeDef(implantRecord.recipe);
                     if (recipeDef == null) {
@@ -351,7 +354,7 @@ namespace EdB.PrepareCarefully {
                         continue;
                     }
                     ImplantOption implantOption = healthOptions.FindImplantOptionThatAddsRecipeDefToBodyPart(recipeDef, bodyPart?.def);
-                    if (implantOption != null) {
+                    if (bodyPart != null || healthOptions.RecipeTargetsBodyPart(recipeDef, null)) {
                         Implant implant = new Implant() {
                             Option = implantOption,
                             Recipe = recipeDef,

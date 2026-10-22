@@ -193,6 +193,10 @@ namespace EdB.PrepareCarefully {
             // Calculate cost for any materials needed for implants.
             OptionsHealth healthOptions = ProviderHealthOptions.GetOptions(pawn);
             foreach (Implant option in pawn.Customizations.Implants) {
+                // Whole-body conditions have no part or ancestor to check.
+                if (option.BodyPartRecord == null) {
+                    continue;
+                }
 
                 // Check if there are any ancestor parts that override the selection.
                 UniqueBodyPart uniquePart = healthOptions.FindBodyPartsForRecord(option.BodyPartRecord);

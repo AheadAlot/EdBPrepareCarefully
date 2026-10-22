@@ -778,7 +778,11 @@ namespace EdB.PrepareCarefully {
                 return Enumerable.Empty<Hediff>();
             }
 
-            return pawn.health.hediffSet.hediffs.Where(h => h?.def == implant?.Option?.HediffDef && h?.Part == implant?.BodyPartRecord);
+            if (implant.Hediff != null && pawn.health.hediffSet.hediffs.Contains(implant.Hediff)) {
+                return new[] { implant.Hediff };
+            }
+            HediffDef hediffDef = implant.HediffDef ?? implant.Hediff?.def ?? implant.Recipe?.addsHediff ?? implant.Option?.HediffDef;
+            return pawn.health.hediffSet.hediffs.Where(h => h != null && h.def == hediffDef && h.Part == implant.BodyPartRecord);
         }
 
         private void RemoveHediffsInternal(CustomizedPawn customizedPawn, IEnumerable<Hediff> hediffs) {

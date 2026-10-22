@@ -17,9 +17,9 @@ namespace EdB.PrepareCarefully {
         }
 
         public SaveRecordImplantV5(Implant option) {
-            this.bodyPart = option.BodyPartRecord.def.defName;
+            this.bodyPart = option.BodyPartRecord?.def?.defName;
             this.recipe = option.Recipe != null ? option.Recipe.defName : null;
-            this.hediffDef = option?.Hediff?.def?.defName;
+            this.hediffDef = option.HediffDef?.defName ?? option.Hediff?.def?.defName ?? option.Recipe?.addsHediff?.defName;
             this.severity = option?.Severity ?? 0f;
         }
 

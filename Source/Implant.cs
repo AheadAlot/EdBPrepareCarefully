@@ -28,7 +28,7 @@ namespace EdB.PrepareCarefully {
                     return Recipe?.addsHediff?.LabelCap ?? "";
                 }
                 else {
-                    return "EdB.PC.Dialog.Implant.InstallImplantLabel".Translate(Option?.HediffDef?.label);
+                    return "EdB.PC.Dialog.Implant.InstallImplantLabel".Translate(Option?.HediffDef?.label ?? HediffDef?.label ?? Hediff?.def?.label ?? "");
                 }
             }
         }
