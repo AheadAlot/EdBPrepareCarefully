@@ -125,16 +125,11 @@ namespace EdB.PrepareCarefully {
         }
 
         protected string ConvertHeadTypeDefNameToLabel(string defName) {
-            string key = "EdB.PC.HeadType." + defName;
-
-            string translated = key.Translate();
-            if (!translated.NullOrEmpty() && translated != key) {
-                return translated;
-            }
-
-            return defName
+            string result = defName
                 .Replace("StarWarsRaces_", "")
-                .Replace("_", "");
+                .Replace("_", " ")
+                ;
+            return result;
         }
 
         //protected string LabelFromGraphicsPath(string path) {

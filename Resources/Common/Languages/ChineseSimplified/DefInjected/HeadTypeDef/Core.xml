@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <Skull.label>骷髅</Skull.label>
+  <Stump.label>残端</Stump.label>
+  <Male_AverageNormal.label>男性标准脸</Male_AverageNormal.label>
+  <Male_AveragePointy.label>男性尖脸</Male_AveragePointy.label>
+  <Male_AverageWide.label>男性宽脸</Male_AverageWide.label>
+  <Male_NarrowNormal.label>男性标准窄脸</Male_NarrowNormal.label>
+  <Male_NarrowPointy.label>男性尖窄脸</Male_NarrowPointy.label>
+  <Male_NarrowWide.label>男性宽窄脸</Male_NarrowWide.label>
+  <Female_AverageNormal.label>女性标准脸</Female_AverageNormal.label>
+  <Female_AveragePointy.label>女性尖脸</Female_AveragePointy.label>
+  <Female_AverageWide.label>女性宽脸</Female_AverageWide.label>
+  <Female_NarrowNormal.label>女性标准窄脸</Female_NarrowNormal.label>
+  <Female_NarrowPointy.label>女性尖窄脸</Female_NarrowPointy.label>
+  <Female_NarrowWide.label>女性宽窄脸</Female_NarrowWide.label>
+</LanguageData>

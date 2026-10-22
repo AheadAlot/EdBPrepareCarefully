@@ -2,9 +2,15 @@
   <v1.6>
     <li>Common</li>
     <li>1.6</li>
+    <li IfModActive="Ludeon.RimWorld.Biotech">Translations/Biotech</li>
+    <li IfModActive="Ludeon.RimWorld.Anomaly">Translations/Anomaly</li>
+    <li IfModActiveAll="Ludeon.RimWorld.Anomaly,Ludeon.RimWorld.Biotech">Translations/AnomalyBiotech</li>
   </v1.6>
   <v1.7>
     <li>Common</li>
     <li>1.7</li>
+    <li IfModActive="Ludeon.RimWorld.Biotech">Translations/Biotech</li>
+    <li IfModActive="Ludeon.RimWorld.Anomaly">Translations/Anomaly</li>
+    <li IfModActiveAll="Ludeon.RimWorld.Anomaly,Ludeon.RimWorld.Biotech">Translations/AnomalyBiotech</li>
   </v1.7>
 </loadFolders>
