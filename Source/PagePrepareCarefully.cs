@@ -63,6 +63,7 @@ namespace EdB.PrepareCarefully {
                 TabRecord tabRecord = new TabRecord(currentTab.Name, delegate {
                     // When a new tab is selected, mark the previously selected TabRecord as unselected and the current one as selected.
                     // Also, update the State to reflected the newly selected ITabView.
+                    DragSlider.StopDragging();
                     if (CurrentTab != null) {
                         CurrentTab.TabRecord.selected = false;
                     }
@@ -91,6 +92,11 @@ namespace EdB.PrepareCarefully {
 
         public override void PreOpen() {
             base.PreOpen();
+        }
+
+        public override void PostClose() {
+            DragSlider.StopDragging();
+            base.PostClose();
         }
 
         public override void DoWindowContents(Rect inRect) {

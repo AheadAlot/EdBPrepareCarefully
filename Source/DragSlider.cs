@@ -13,6 +13,7 @@ namespace EdB.PrepareCarefully {
         private DragSliderCallback dragUpdateCallback;
         private DragSliderCallback dragCompletedCallback;
         protected static FieldInfo draggingField;
+        private static DragSlider activeSlider;
 
         public DragSliderValueUpdateCallback valueUpdateCallback = null;
 
@@ -68,9 +69,17 @@ namespace EdB.PrepareCarefully {
         public void DraggingCompleted(float mouseOffX, float rateFactor) {
             SoundStarter.PlayOneShot(DragEndSound, SoundInfo.OnCamera(MaintenanceType.None));
             valueUpdateCallback = null;
+            if (activeSlider == this) {
+                activeSlider = null;
+            }
         }
 
         public void DraggingUpdate(float mouseOffX, float rateFactor) {
+            // In 1.7, window input can consume MouseUp before the global manager sees it.
+            if (!Input.GetMouseButton(0)) {
+                ForceStop();
+                return;
+            }
             Update();
 
             int amount = 0;
@@ -145,7 +154,11 @@ namespace EdB.PrepareCarefully {
             float height = rect.height;
             Rect slRect = new Rect(rect);
 
+            if (Event.current.rawType == EventType.MouseUp && Event.current.button == 0) {
+                StopDragging();
+            }
             if (DragSliderManager.DragSlider(slRect, 1, dragStartCallback, dragUpdateCallback, dragCompletedCallback)) {
+                activeSlider = this;
                 Reset();
                 this.value = value;
                 dragBaseAmount = value;
@@ -171,7 +184,16 @@ namespace EdB.PrepareCarefully {
         }
 
         public void ForceStop() {
+            if (activeSlider != this) {
+                return;
+            }
             DragSliderManager.ForceStop();
+            DraggingCompleted(0, 1);
+            Reset();
+        }
+
+        public static void StopDragging() {
+            activeSlider?.ForceStop();
         }
     }
 }
