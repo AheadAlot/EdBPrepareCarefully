@@ -152,6 +152,7 @@ namespace EdB.PrepareCarefully {
                     else if (Event.current.type == EventType.MouseUp) {
                         int newTicks = Environment.TickCount;
                         if (newTicks - ticksSinceClick < ClickDelay) {
+                            dragSlider.ForceStop();
                             showTextField = true;
                             shouldFocusField = true;
                         }

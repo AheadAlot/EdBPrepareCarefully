@@ -34,6 +34,9 @@ namespace EdB.PrepareCarefully {
             LoadEquipment(preset, result, customizations);
             LoadPawns(preset, result, customizations);
             LoadTemporaryPawns(preset, result, customizations);
+            if (customizations.AllPawns.Concat(customizations.TemporaryPawns).GroupBy(p => p.Id).Any(g => g.Count() > 1)) {
+                result.AddWarning("The preset contains duplicate pawn identifiers. Ambiguous relationships were skipped; please recreate them and save the preset again.");
+            }
             LoadRelationships(preset, result, customizations);
             LoadParentChildGroups(preset, result, customizations);
 
@@ -162,7 +165,7 @@ namespace EdB.PrepareCarefully {
                         Logger.Warning("Failed to load a custom relationship from the preset: " + r);
                         continue;
                     }
-                    CustomizedRelationship relationship = LoadRelationship(r, customizations.AllPawns);
+                    CustomizedRelationship relationship = LoadRelationship(r, customizations.AllPawns.Concat(customizations.TemporaryPawns));
                     if (relationship == null) {
                         atLeastOneRelationshipFailed = true;
                         Logger.Warning("Failed to load a custom relationship from the preset: " + r);
@@ -207,59 +210,42 @@ namespace EdB.PrepareCarefully {
             if (preset.parentChildGroups == null) {
                 return;
             }
-            Dictionary<string, CustomizedPawn> temporaryPawns = new Dictionary<string, CustomizedPawn>();
-            foreach (var temporaryPawn in customizations.TemporaryPawns) {
-                temporaryPawns.Add(temporaryPawn.Id, temporaryPawn);
-            }
+            var pawns = customizations.AllPawns.Concat(customizations.TemporaryPawns).ToList();
             foreach (var groupRecord in preset.parentChildGroups) {
                 ParentChildGroup group = new ParentChildGroup();
+                bool unresolvedPawn = false;
                 if (groupRecord.parents != null) {
                     foreach (var id in groupRecord.parents) {
-                        CustomizedPawn parent = FindPawnById(id, customizations.AllPawns);
+                        CustomizedPawn parent = FindPawnById(id, pawns);
                         if (parent != null) {
-                            var pawn = parent;
-                            if (pawn != null) {
-                                group.Parents.Add(pawn);
-                            }
-                            else {
-                                Logger.Warning("Could not load a custom parent relationship because it could not find a matching pawn in the relationship manager.");
-                            }
-                        }
-                        else if (temporaryPawns.ContainsKey(id)) {
-                            group.Parents.Add(temporaryPawns[id]);
+                            group.Parents.Add(parent);
                         }
                         else {
-                            Logger.Warning("Could not load a custom parent relationship because it could not find a pawn with the saved identifer.");
+                            unresolvedPawn = true;
+                            result.AddWarning("Skipped a parent/child group because a parent identifier is missing or ambiguous: " + id);
                         }
                     }
                 }
                 if (groupRecord.children != null) {
                     foreach (var id in groupRecord.children) {
-                        CustomizedPawn child = FindPawnById(id, customizations.AllPawns);
+                        CustomizedPawn child = FindPawnById(id, pawns);
                         if (child != null) {
-                            var pawn = child;
-                            if (pawn != null) {
-                                group.Children.Add(pawn);
-                            }
-                            else {
-                                Logger.Warning("Could not load a custom child relationship because it could not find a matching pawn in the relationship manager.");
-                            }
-                        }
-                        else if (temporaryPawns.ContainsKey(id)) {
-                            group.Parents.Add(temporaryPawns[id]);
+                            group.Children.Add(child);
                         }
                         else {
-                            Logger.Warning("Could not load a custom child relationship because it could not find a pawn with the saved identifer.");
+                            unresolvedPawn = true;
+                            result.AddWarning("Skipped a parent/child group because a child identifier is missing or ambiguous: " + id);
                         }
                     }
                 }
-                
-                if (ValidateParentChildGroup(group)) {
+
+                // Do not turn an unresolved family into a different family with generated parents.
+                if (!unresolvedPawn && ValidateParentChildGroup(group)) {
                     customizations.ParentChildGroups.Add(group);
                 }
             }
             ManagerRelationships.ReassignHiddenPawnIndices();
-            foreach (var p in temporaryPawns.Values) {
+            foreach (var p in customizations.TemporaryPawns) {
                 var customizedPawn = ManagerRelationships.CreateNewTemporaryPawn(p.TemporaryPawn.Gender);
                 p.Pawn = customizedPawn.Pawn;
                 p.TemporaryPawn = customizedPawn.TemporaryPawn;
@@ -381,22 +367,19 @@ namespace EdB.PrepareCarefully {
         }
         
         protected CustomizedPawn FindPawnById(string id, IEnumerable<CustomizedPawn> colonistPawns) {
-            CustomizedPawn result = colonistPawns.FirstOrDefault((CustomizedPawn c) => {
-                return id == c.Id;
-            });
-            return result;
+            if (string.IsNullOrEmpty(id)) {
+                return null;
+            }
+            // Old presets may contain duplicate IDs from importing the same character repeatedly.
+            // An ambiguous ID cannot identify a relationship endpoint safely.
+            var matches = colonistPawns.Where(c => id == c.Id).Take(2).ToList();
+            return matches.Count == 1 ? matches[0] : null;
         }
 
         public CustomizedRelationship LoadRelationship(SaveRecordRelationshipV3 saved, IEnumerable<CustomizedPawn> pawns) {
             CustomizedRelationship result = new CustomizedRelationship();
-            foreach (var p in pawns) {
-                if (p.Id == saved.source) {
-                    result.Source = p;
-                }
-                if (p.Id == saved.target) {
-                    result.Target = p;
-                }
-            }
+            result.Source = FindPawnById(saved.source, pawns);
+            result.Target = FindPawnById(saved.target, pawns);
 
             result.Def = saved?.relation != null ? DefDatabase<PawnRelationDef>.GetNamedSilentFail(saved.relation) : null;
             if (result.Def != null) {

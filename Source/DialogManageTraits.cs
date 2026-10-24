@@ -71,6 +71,11 @@ namespace EdB.PrepareCarefully {
         protected ProviderTraits providerTraits = null;
         protected TipCache tipCache = new TipCache();
         public List<Trait> originalTraits = new List<Trait>();
+        
+        // Search functionality
+        private QuickSearchWidget searchWidget = new QuickSearchWidget();
+        private string filterSearchTerm = null;
+        private List<TraitOption> filteredTraitOptions = new List<TraitOption>();
 
         public DialogManageTraits(ProviderTraits providerTraits) {
             this.closeOnCancel = true;
@@ -96,6 +101,16 @@ namespace EdB.PrepareCarefully {
                 traitOptionList.Add(new TraitOption() {
                     Trait = trait,
                 });
+            }
+            ApplyCurrentFilters();
+        }
+
+        protected void ApplyCurrentFilters() {
+            filteredTraitOptions.Clear();
+            foreach (var traitOption in traitOptionList) {
+                if (filterSearchTerm == null || traitOption.Trait.LabelCap.IndexOf(filterSearchTerm, StringComparison.CurrentCultureIgnoreCase) != -1) {
+                    filteredTraitOptions.Add(traitOption);
+                }
             }
         }
 
@@ -141,6 +156,7 @@ namespace EdB.PrepareCarefully {
                     }
                 });
             }
+            ApplyCurrentFilters();
         }
 
         protected void MarkOptionsAsDirty() {
@@ -224,8 +240,10 @@ namespace EdB.PrepareCarefully {
             HeaderHeight = 32;
             FooterHeight = 40f;
             WindowPadding = 18;
-            ContentMargin = new Vector2(10f, 18f);
-            WindowSize = new Vector2(440f, 584f);
+            // Increase top margin to accommodate search widget above header
+            ContentMargin = new Vector2(10f, 45f);
+            // Increase window height to maintain same content area size
+            WindowSize = new Vector2(440f, 620f);
             ButtonSize = new Vector2(140f, 40f);
 
             ContentSize = new Vector2(WindowSize.x - WindowPadding * 2 - ContentMargin.x * 2,
@@ -333,11 +351,24 @@ namespace EdB.PrepareCarefully {
                 Widgets.Label(headerRect, HeaderLabel);
             }
 
+            // Draw search widget
+            //Rect searchRect = new Rect(inRect.width - 220, HeaderRect.y + 10, 210, 24);
+            Rect searchRect = new Rect(inRect.width - 220, HeaderRect.y - 30, 210, 24);
+            searchWidget.OnGUI(searchRect,
+                () => {
+                    filterSearchTerm = searchWidget.filter.Text;
+                    ApplyCurrentFilters();
+                },
+                () => {
+                    filterSearchTerm = null;
+                    ApplyCurrentFilters();
+                });
+
             Text.Font = GameFont.Small;
             GUI.BeginGroup(ContentRect);
 
             try {
-                table.Draw(this.traitOptionList);
+                table.Draw(this.filteredTraitOptions);
             }
             finally {
                 GUI.EndGroup();

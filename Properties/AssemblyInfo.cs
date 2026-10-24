@@ -14,4 +14,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyVersion("1.1.1")]
 
 // Increment for each new release
+#if NET10_0
+[assembly: AssemblyFileVersion("1.7.0")]
+#else
 [assembly: AssemblyFileVersion("1.6.2")]
+#endif

@@ -448,8 +448,12 @@ namespace EdB.PrepareCarefully {
                 return;
             }
             //Logger.Debug("Adding implant to pawn, recipe = " + implant.Recipe?.defName + ", hediff = " + implant.HediffDef?.defName + ", bodyPart = " + implant.BodyPartRecord?.def?.defName);
-            if (implant.BodyPartRecord == null) {
-                Logger.Warning("Could not add implant to pawn because no BodyPartRecord is defined");
+            HediffDef hediffDef = implant.Recipe?.addsHediff ?? implant.HediffDef;
+            if (implant.BodyPartRecord == null && (implant.Recipe?.targetsBodyPart == true
+                    || (hediffDef?.hediffClass != null
+                        && (typeof(Hediff_AddedPart).IsAssignableFrom(hediffDef.hediffClass)
+                            || typeof(Hediff_MissingPart).IsAssignableFrom(hediffDef.hediffClass))))) {
+                throw new InvalidOperationException("A body part is required for " + hediffDef?.defName);
             }
             if (implant.Recipe != null) {
                 implant.Hediff = HediffMaker.MakeHediff(implant.Recipe.addsHediff, pawn, implant.BodyPartRecord);

@@ -114,7 +114,7 @@ namespace EdB.PrepareCarefully {
             foreach (var implant in customizedPawn.Customizations.Implants) {
                 Logger.Debug("initialize implant " + implant.Option?.HediffDef?.defName + ", severity = " + implant.Severity);
                 implantList.Add(implant);
-                if (implant.ReplacesPart) {
+                if (implant.BodyPartRecord != null && implant.ReplacesPart) {
                     replacedParts.Add(implant.BodyPartRecord, implant);
                 }
             }
@@ -192,6 +192,13 @@ namespace EdB.PrepareCarefully {
                         option.Parts.Add(implantPart);
                     }
                 }
+                if (health.ImplantOptionTargetsBodyPart(implantOption, null)) {
+                    Implant foundImplant = implantList.FirstOrDefault(i => i.HediffDef == implantOption.HediffDef && i.BodyPartRecord == null);
+                    option.Parts.Add(new ImplantBodyPart() {
+                        Selected = foundImplant != null,
+                        Implant = foundImplant,
+                    });
+                }
                 result.Add(option);
             }
             this.options = result.OrderBy(o => o.Label).ToList();
@@ -207,6 +214,11 @@ namespace EdB.PrepareCarefully {
             Dictionary<BodyPartRecord, Implant> firstPassReplacedParts = new Dictionary<BodyPartRecord, Implant>();
             List<Implant> firstPassValidImplants = new List<Implant>();
             foreach (var implant in implantList) {
+                // Whole-body conditions are not subject to body-part conflicts.
+                if (implant.BodyPartRecord == null) {
+                    firstPassValidImplants.Add(implant);
+                    continue;
+                }
                 UniqueBodyPart part = health.FindBodyPartsForRecord(implant.BodyPartRecord);
                 if (part == null) {
                     continue;
@@ -229,6 +241,10 @@ namespace EdB.PrepareCarefully {
             List<Implant> secondPassValidImplants = new List<Implant>();
             // Iterate all of the implants that we marked as valid in the first pass
             foreach (var implant in firstPassValidImplants) {
+                if (implant.BodyPartRecord == null) {
+                    secondPassValidImplants.Add(implant);
+                    continue;
+                }
                 UniqueBodyPart part = health.FindBodyPartsForRecord(implant.BodyPartRecord);
                 if (part == null) {
                     continue;
@@ -258,7 +274,7 @@ namespace EdB.PrepareCarefully {
             replacedParts.Clear();
             validImplants.Clear();
             foreach (var implant in secondPassValidImplants) {
-                if (implant.ReplacesPart) {
+                if (implant.BodyPartRecord != null && implant.ReplacesPart) {
                     replacedParts.Add(implant.BodyPartRecord, implant);
                 }
                 validImplants.Add(implant);
@@ -277,7 +293,7 @@ namespace EdB.PrepareCarefully {
             Dictionary<BodyPartRecord, Implant> blockedParts = new Dictionary<BodyPartRecord, Implant>();
             foreach (var option in options) {
                 foreach (var part in option.Parts) {
-                    if (evaluatedParts.Contains(part.Part)) {
+                    if (part.Part == null || evaluatedParts.Contains(part.Part)) {
                         continue;
                     }
                     if (!replacedParts.TryGetValue(part.Part, out Implant blockingImplant)) {
@@ -306,7 +322,7 @@ namespace EdB.PrepareCarefully {
                     part.Disabled = false;
                     part.BlockingImplant = null;
                     Implant blockingImplant = null;
-                    if (blockedParts.TryGetValue(part.Part, out blockingImplant)) {
+                    if (part.Part != null && blockedParts.TryGetValue(part.Part, out blockingImplant)) {
                         if (!validImplants.Contains(part.Implant)) {
                             part.Disabled = true;
                             part.BlockingImplant = blockingImplant;
@@ -487,7 +503,7 @@ namespace EdB.PrepareCarefully {
             if (missingDependencies == null) {
                 missingDependencies = new HashSet<DialogOption>();
             }
-            HashSet<HediffDef> selected = new HashSet<HediffDef>(implantList.Select(i => i.Option?.HediffDef).Where(h => h != null));
+            HashSet<HediffDef> selected = new HashSet<HediffDef>(implantList.Select(i => i.HediffDef ?? i.Hediff?.def ?? i.Recipe?.addsHediff ?? i.Option?.HediffDef).Where(h => h != null));
             //Logger.Debug("    Selected implants: " + string.Join(", ", selected.Select(d => d.defName)));
             foreach (var implant in implantList) {
                 if (implant.Option?.Dependency != null && !selected.Contains(implant.Option.Dependency)) {
@@ -748,7 +764,7 @@ namespace EdB.PrepareCarefully {
                         }
                         if (option.RequiresPartSelection) {
                             foreach (var part in option.Parts) {
-                                string labelText = part.Part.LabelCap;
+                                string labelText = part.Part != null ? part.Part.LabelCap : "WholeBody".Translate().Resolve();
                                 labelRect = new Rect(rect.x + inset, cursor, rect.width - inset * 2, LineHeight);
                                 dottedLineRect = new Rect(labelRect.x, labelRect.y + 21, DottedLineSize.x, DottedLineSize.y);
                                 checkboxRect = new Rect(labelRect.x + labelRect.width - 22 - 6, labelRect.MiddleY() - 12, 22, 22);
